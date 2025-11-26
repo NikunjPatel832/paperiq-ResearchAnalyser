@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div class="d-flex justify-content-between align-items-center">
+    <h2>📄 {{ document.filename }}</h2>
+    <a href="{{ url_for('download_file', doc_id=document.id) }}" class="btn">⬇ Download</a>
+  </div>
+  <p class="text-muted mt-2">
+    Uploaded on: {{ document.created_at if document.created_at else "Unknown" }}
+  </p>
+</div>
+
+<div class="row g-4 mt-2">
+  <!-- Summary -->
+  <div class="col-md-8">
+    <div class="card">
+      <h4>🧠 Summary</h4>
+      <p style="line-height:1.7; font-size:1.05rem; color:#34495e;">
+        {{ document.summary }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Entities -->
+  <div class="col-md-4">
+    <div class="card">
+      <h4>🏷️ Named Entities</h4>
+      {% if document.insights.entities %}
+        {% for ent in document.insights.entities %}
+          <span class="tag">{{ ent[0] }} <small>({{ ent[1] }})</small></span>
+        {% endfor %}
+      {% else %}
+        <p>No entities detected.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% if document.insights.key_phrases %}
+<div class="card mt-4">
+  <h4>💡 Key Insights</h4>
+  <ul style="margin:0; padding-left:20px;">
+    {% for phrase in document.insights.key_phrases %}
+      <li style="margin-bottom:6px;">{{ phrase }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<div class="text-center mt-4">
+  <a href="{{ url_for('dashboard') }}" class="btn">⬅ Back to Dashboard</a>
+</div>
+{% endblock %}

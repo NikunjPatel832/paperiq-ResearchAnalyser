@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="upload-container">
+  <div class="upload-card">
+    <h2>📝 Sign Up</h2>
+    <p class="text-muted">Create a new account to start analyzing documents.</p>
+
+    <form method="POST" action="{{ url_for('register') }}">
+      <div class="mt-2">
+        <input type="text" name="username" placeholder="Username" required
+               style="padding:12px;width:90%;border:1px solid #ccc;border-radius:8px;margin-top:15px;">
+      </div>
+      <div class="mt-2">
+        <input type="password" name="password" placeholder="Password" required
+               style="padding:12px;width:90%;border:1px solid #ccc;border-radius:8px;margin-top:15px;">
+      </div>
+
+      <button type="submit" class="btn mt-2" style="width:auto; padding:10px 30px;">Register</button>
+    </form>
+
+    <p class="text-muted mt-2">
+      Already have an account? <a href="{{ url_for('login') }}" style="color:#4a00e0;text-decoration:none;">Login</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

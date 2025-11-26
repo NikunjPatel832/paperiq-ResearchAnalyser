@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="upload-container">
+  <div class="upload-card">
+    <h2>📤 Upload Your Document</h2>
+    <p class="text-muted">Select a text or PDF file to analyze. The system will automatically summarize and extract insights.</p>
+
+    <form method="POST" enctype="multipart/form-data">
+      <div class="file-input">
+        <input type="file" name="file" id="fileInput" accept=".txt,.pdf,.docx" required>
+        <label for="fileInput" id="fileLabel">Choose File</label>
+      </div>
+
+      <button type="submit" class="btn full-width mt-2">Upload & Analyze</button>
+    </form>
+
+    <div id="fileName" class="filename-display"></div>
+  </div>
+</div>
+
+<script>
+document.getElementById("fileInput").addEventListener("change", function(e){
+  const label = document.getElementById("fileLabel");
+  const nameDisplay = document.getElementById("fileName");
+  const file = e.target.files[0];
+  if(file){
+    label.textContent = "✅ File Selected";
+    nameDisplay.textContent = "📄 " + file.name;
+  } else {
+    label.textContent = "Choose File";
+    nameDisplay.textContent = "";
+  }
+});
+</script>
+{% endblock %}

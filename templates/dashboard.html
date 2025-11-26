@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h2 class="mb-4">📊 Dashboard — {{ username }}</h2>
+
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card">
+        <h5>Uploads in the Last 7 Days</h5>
+        <canvas id="dailyChart" height="160"></canvas>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <h5>Top Entity Types</h5>
+        <ul id="entityList" style="list-style:none; padding-left:0;"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>📁 Your Documents</h3>
+  <table class="doc-table">
+    <thead>
+      <tr>
+        <th>Filename</th>
+        <th>Summary</th>
+        <th>Entities</th>
+        <th>Download</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in docs %}
+      <tr>
+        <td>
+          <a href="{{ url_for('view_document', doc_id=d.id) }}" style="color:#007bff; font-weight:500;">
+            {{ d.filename }}
+          </a>
+        </td>
+        <td>{{ d.summary[:200] }}{% if d.summary|length > 200 %}...{% endif %}</td>
+        <td>
+          {% if d.insights.entities %}
+            {% for e in d.insights.entities[:6] %}
+              <span class="tag">{{ e[0] }} ({{ e[1] }})</span>
+            {% endfor %}
+          {% else %}
+            <span>-</span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="{{ url_for('download_file', doc_id=d.id) }}" class="btn">⬇ Download</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+async function loadMetrics(){
+  const r = await fetch('/api/metrics');
+  const j = await r.json();
+
+  // Chart: uploads over time
+  const ctx = document.getElementById('dailyChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: { 
+      labels: j.daily.map(x => x.day),
+      datasets: [{
+        label: 'Documents Uploaded',
+        data: j.daily.map(x => x.count),
+        fill: true,
+        borderColor: '#007bff',
+        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+        tension: 0.3
+      }]
+    },
+    options: { responsive: true }
+  });
+
+  // Entity list
+  const el = document.getElementById('entityList');
+  const ent = j.entities || {};
+  const sorted = Object.entries(ent).sort((a,b)=>b[1]-a[1]);
+  el.innerHTML = '';
+  for (let [k, v] of sorted) {
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${k}</strong>: ${v}`;
+    el.appendChild(li);
+  }
+}
+loadMetrics();
+</script>
+{% endblock %}
